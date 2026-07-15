@@ -31,7 +31,7 @@
   let value = $state(100)
   let paused = $state(false)
   let scenario = $state<'loading' | 'loading-hold' | 'live' | 'empty'>('loading')
-  // Loading is a pure function of the scenario — derived, not synced
+  /** Loading is a pure function of the scenario — derived, not synced */
   const loading = $derived(scenario === 'loading' || scenario === 'loading-hold')
 
   let windowSecs = $state(30)
@@ -49,10 +49,10 @@
 
   let startValue = 100
   let lastValue = 100
-  // Working copy of the live candle — mutated per tick, copied into state
+  /** Working copy of the live candle — mutated per tick, copied into state */
   let liveCandleLocal: CandlePoint | null = null
   let interval = 0
-  // Tick buffer covers widest window: crypto 1h=3600 ticks, dev 5m≈1000 ticks
+  /** Tick buffer covers widest window: crypto 1h=3600 ticks, dev 5m≈1000 ticks */
   let maxTicks = 1200
 
   function tickAndAggregate(pt: LivelinePoint) {
@@ -94,7 +94,7 @@
     const base = startValue
     const isCrypto = base > 1000
     const seedTickInterval = isCrypto ? 1 : 0.3
-    // Cover the widest time window with margin: crypto 1h=3600s, dev 5m=300s
+    /** Cover the widest time window with margin: crypto 1h=3600s, dev 5m=300s */
     const seedCount = isCrypto ? 3800 : 500
     const seed: LivelinePoint[] = []
     let v = base
@@ -123,7 +123,7 @@
     clearInterval(interval)
   }
 
-  // Scenario transitions
+  /** Scenario transitions */
   $effect(() => {
     if (scenario === 'loading') {
       untrack(resetData)
@@ -140,7 +140,7 @@
     return () => clearInterval(interval)
   })
 
-  // Restart interval when tick rate changes while live
+  /** Restart interval when tick rate changes while live */
   $effect(() => {
     if (scenario !== 'live') return
     const rate = tickRate
@@ -149,7 +149,7 @@
     return () => clearInterval(interval)
   })
 
-  // Re-aggregate candles when candle width changes while live
+  /** Re-aggregate candles when candle width changes while live */
   $effect(() => {
     const width = candleSecs
     if (scenario !== 'live') return
@@ -162,7 +162,7 @@
     })
   })
 
-  // Preset switch — reset all dependent state
+  /** Preset switch — reset all dependent state */
   $effect(() => {
     const p = preset
     untrack(() => {
@@ -173,7 +173,8 @@
         windowSecs = 300
         volatility = 'calm'
         chartType = 'candle'
-        maxTicks = 4000 // covers 1h window at 1 tick/sec
+        /** covers 1h window at 1 tick/sec */
+        maxTicks = 4000
       } else {
         startValue = 100
         tickRate = 300
@@ -181,16 +182,17 @@
         windowSecs = 30
         volatility = 'normal'
         chartType = 'candle'
-        maxTicks = 1200 // covers 5m window at ~3 ticks/sec
+        /** covers 5m window at ~3 ticks/sec */
+        maxTicks = 1200
       }
-      // Force re-seed by cycling to loading
+      /** Force re-seed by cycling to loading */
       resetData()
       lastValue = p === 'crypto' ? 65000 : 100
       scenario = 'loading'
     })
   })
 
-  // LivelineTransition demo state
+  /** LivelineTransition demo state */
   let transActive = $state<'line' | 'candle'>('candle')
 
   const isDark = $derived(theme === 'dark')

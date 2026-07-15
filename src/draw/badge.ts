@@ -12,8 +12,10 @@ export function badgeSvgPath(
   tailSpread: number,
 ): string {
   const r = pillH / 2
-  const cx = tailLen + pillW - r   // right semicircle center X
-  const tl = tailLen + r           // top-left junction X
+  /** right semicircle center X */
+  const cx = tailLen + pillW - r
+  /** top-left junction X */
+  const tl = tailLen + r
 
   return [
     `M${tl},0`,

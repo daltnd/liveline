@@ -24,7 +24,7 @@
   let series = $state<LivelineSeries[]>([])
   let paused = $state(false)
   let scenario = $state<'live' | 'loading' | 'loading-hold' | 'empty'>('live')
-  // Loading is a pure function of the scenario — derived, not synced
+  /** Loading is a pure function of the scenario — derived, not synced */
   const loading = $derived(scenario === 'loading' || scenario === 'loading-hold')
   let seriesCount = $state(4)
   let windowSecs = $state(MULTI_WINDOWS[0].secs)
@@ -40,9 +40,9 @@
 
   function tick() {
     const c = seriesCount
-    // Trim or expand series to match count
+    /** Trim or expand series to match count */
     let next = series.slice(0, c)
-    // Add new series if count grew
+    /** Add new series if count grew */
     while (next.length < c) {
       const i = next.length
       const now = Date.now() / 1000
@@ -67,7 +67,7 @@
   function startLive(count: number) {
     clearInterval(interval)
     const now = Date.now() / 1000
-    // Seed enough history for the 5m window (300s / 0.5s interval = 600 points)
+    /** Seed enough history for the 5m window (300s / 0.5s interval = 600 points) */
     series = MULTI_LABELS.slice(0, count).map((label, i) => {
       const seed: LivelinePoint[] = []
       let v = 50 + (Math.random() - 0.5) * 4
@@ -94,8 +94,10 @@
       clearInterval(interval)
       return
     }
-    // scenario === 'live' — the interval reads seriesCount directly,
-    // so count changes apply on the next tick without a restart
+    /**
+     * scenario === 'live' — the interval reads seriesCount directly,
+     * so count changes apply on the next tick without a restart
+     */
     untrack(() => startLive(seriesCount))
     return () => clearInterval(interval)
   })

@@ -17,31 +17,32 @@ export function drawSpline(
 
   const n = pts.length
 
-  // 1. Compute secant slopes (delta) between consecutive points
+  /** 1. Compute secant slopes (delta) between consecutive points */
   const delta: number[] = new Array(n - 1)
-  const h: number[] = new Array(n - 1) // x-intervals
+  /** x-intervals */
+  const h: number[] = new Array(n - 1)
   for (let i = 0; i < n - 1; i++) {
     h[i] = pts[i + 1][0] - pts[i][0]
     delta[i] = h[i] === 0 ? 0 : (pts[i + 1][1] - pts[i][1]) / h[i]
   }
 
-  // 2. Initial tangent estimates
+  /** 2. Initial tangent estimates */
   const m: number[] = new Array(n)
   m[0] = delta[0]
   m[n - 1] = delta[n - 2]
   for (let i = 1; i < n - 1; i++) {
     if (delta[i - 1] * delta[i] <= 0) {
-      // Sign change or zero — tangent must be zero for monotonicity
+      /** Sign change or zero — tangent must be zero for monotonicity */
       m[i] = 0
     } else {
       m[i] = (delta[i - 1] + delta[i]) / 2
     }
   }
 
-  // 3. Fritsch-Carlson constraint: alpha^2 + beta^2 <= 9
+  /** 3. Fritsch-Carlson constraint: alpha^2 + beta^2 <= 9 */
   for (let i = 0; i < n - 1; i++) {
     if (delta[i] === 0) {
-      // Flat segment — zero both endpoint tangents
+      /** Flat segment — zero both endpoint tangents */
       m[i] = 0
       m[i + 1] = 0
     } else {
@@ -56,7 +57,7 @@ export function drawSpline(
     }
   }
 
-  // 4. Draw bezier curves using tangents as control points
+  /** 4. Draw bezier curves using tangents as control points */
   for (let i = 0; i < n - 1; i++) {
     const hi = h[i]
     ctx.bezierCurveTo(

@@ -14,10 +14,10 @@
   let value = $state(100)
   let paused = $state(false)
   let scenario = $state<'loading' | 'loading-hold' | 'live' | 'empty'>('loading')
-  // Loading is a pure function of the scenario — derived, not synced
+  /** Loading is a pure function of the scenario — derived, not synced */
   const loading = $derived(scenario === 'loading' || scenario === 'loading-hold')
 
-  // Prop controls
+  /** Prop controls */
   let windowSecs = $state(30)
   let degen = $state(false)
   let degenScale = $state(1)
@@ -34,7 +34,7 @@
   let windowStyle = $state<'default' | 'rounded' | 'text'>('default')
   let lineMode = $state(true)
 
-  // Data controls
+  /** Data controls */
   let volatility = $state<Volatility>('normal')
   let tickRate = $state(300)
 
@@ -66,7 +66,7 @@
     interval = window.setInterval(tick, tickRate)
   }
 
-  // Scenario transitions
+  /** Scenario transitions */
   $effect(() => {
     if (scenario === 'loading') {
       data = []
@@ -81,12 +81,12 @@
       return
     }
 
-    // scenario === 'live'
+    /** scenario === 'live' */
     untrack(startLive)
     return () => clearInterval(interval)
   })
 
-  // Restart interval when tick rate changes while live
+  /** Restart interval when tick rate changes while live */
   $effect(() => {
     if (scenario !== 'live') return
     const rate = tickRate

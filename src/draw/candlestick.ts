@@ -5,7 +5,7 @@ export type { CandlePoint } from '../types.js'
 const BULL = '#22c55e'
 const BEAR = '#ef4444'
 
-// Pre-parsed RGB for fast interpolation
+/** Pre-parsed RGB for fast interpolation */
 const BULL_RGB = [34, 197, 94] as const
 const BEAR_RGB = [239, 68, 68] as const
 
@@ -102,7 +102,7 @@ export function drawCandlesticks(
   const padL = layout.pad.left
   const padR = layout.pad.left + layout.chartW
 
-  // Live pulse: subtle brightness cycle
+  /** Live pulse: subtle brightness cycle */
   const livePulse = 0.12 + Math.sin(now_ms * 0.004) * 0.08
 
   for (const c of candles) {
@@ -116,7 +116,7 @@ export function drawCandlesticks(
       color = blendToAccent(color, accentColor, accentBlend)
     }
 
-    // Scrub dimming: smooth spatial gradient from cursor position
+    /** Scrub dimming: smooth spatial gradient from cursor position */
     let candleAlpha = isLive ? liveAlpha : 1
     if (scrubDim > 0.01 && scrubX > 0) {
       const dist = cx - scrubX
@@ -130,12 +130,12 @@ export function drawCandlesticks(
     const baseAlpha = ctx.globalAlpha
     ctx.globalAlpha = baseAlpha * candleAlpha
 
-    // Body geometry
+    /** Body geometry */
     const bodyTop = toY(Math.max(c.open, c.close))
     const bodyBottom = toY(Math.min(c.open, c.close))
     const bodyH = Math.max(1, bodyBottom - bodyTop)
 
-    // Wicks
+    /** Wicks */
     const wickTop = toY(c.high)
     const wickBottom = toY(c.low)
     ctx.lineCap = 'round'
@@ -156,13 +156,13 @@ export function drawCandlesticks(
       ctx.stroke()
     }
 
-    // Body
+    /** Body */
     ctx.fillStyle = color
     ctx.beginPath()
     roundedRect(ctx, cx - halfBody, bodyTop, bodyW, bodyH, radius)
     ctx.fill()
 
-    // Live candle glow
+    /** Live candle glow */
     if (isLive) {
       ctx.save()
       ctx.globalAlpha = baseAlpha * candleAlpha * livePulse
@@ -230,7 +230,7 @@ export function drawCandleCrosshair(
 
   const { h, pad } = layout
 
-  // Vertical line
+  /** Vertical line */
   ctx.save()
   ctx.globalAlpha = opacity * 0.5
   ctx.strokeStyle = palette.crosshairLine
@@ -241,7 +241,7 @@ export function drawCandleCrosshair(
   ctx.stroke()
   ctx.restore()
 
-  // Tooltip — OHLC + time (matches line chart crosshair patterns)
+  /** Tooltip — OHLC + time (matches line chart crosshair patterns) */
   if (opacity < 0.1 || layout.w < 200) return
 
   const isBull = candle.close >= candle.open
@@ -255,7 +255,7 @@ export function drawCandleCrosshair(
   ctx.font = '400 13px "SF Mono", Menlo, monospace'
   ctx.textAlign = 'left'
 
-  // Full OHLC at ≥400px, condensed (close + time) at smaller sizes
+  /** Full OHLC at ≥400px, condensed (close + time) at smaller sizes */
   let parts: { text: string; color: string }[]
   if (layout.w >= 400) {
     const o = formatValue(candle.open)
@@ -282,7 +282,7 @@ export function drawCandleCrosshair(
     ]
   }
 
-  // Measure
+  /** Measure */
   let totalW = 0
   const widths: number[] = []
   for (const p of parts) {
@@ -291,7 +291,7 @@ export function drawCandleCrosshair(
     totalW += w
   }
 
-  // Position — center on hover, clamp to chart bounds
+  /** Position — center on hover, clamp to chart bounds */
   let tx = hoverX - totalW / 2
   const minX = pad.left + 4
   const maxX = layout.w - pad.right - totalW
@@ -299,7 +299,7 @@ export function drawCandleCrosshair(
   if (tx > maxX) tx = maxX
   const ty = pad.top + 24
 
-  // Outline stroke for readability
+  /** Outline stroke for readability */
   ctx.strokeStyle = palette.tooltipBg
   ctx.lineWidth = 3
   ctx.lineJoin = 'round'
@@ -309,7 +309,7 @@ export function drawCandleCrosshair(
     cx += widths[i]
   }
 
-  // Fill text
+  /** Fill text */
   cx = tx
   for (let i = 0; i < parts.length; i++) {
     ctx.fillStyle = parts[i].color

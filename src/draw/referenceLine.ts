@@ -19,7 +19,7 @@ export function drawReferenceLine(
     const centerX = pad.left + chartW / 2
     const gapPad = 8
 
-    // Line left of text
+    /** Line left of text */
     ctx.strokeStyle = palette.refLine
     ctx.lineWidth = 1
     ctx.beginPath()
@@ -27,18 +27,18 @@ export function drawReferenceLine(
     ctx.lineTo(centerX - textW / 2 - gapPad, y)
     ctx.stroke()
 
-    // Line right of text
+    /** Line right of text */
     ctx.beginPath()
     ctx.moveTo(centerX + textW / 2 + gapPad, y)
     ctx.lineTo(w - pad.right, y)
     ctx.stroke()
 
-    // Label
+    /** Label */
     ctx.fillStyle = palette.refLabel
     ctx.textAlign = 'center'
     ctx.fillText(label, centerX, y + 4)
   } else {
-    // Full line, no label
+    /** Full line, no label */
     ctx.strokeStyle = palette.refLine
     ctx.lineWidth = 1
     ctx.setLineDash([4, 4])

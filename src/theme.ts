@@ -26,19 +26,19 @@ export function resolveTheme(color: string, mode: ThemeMode): LivelinePalette {
   const isDark = mode === 'dark'
 
   return {
-    // Line
+    /** Line */
     line: color,
     lineWidth: 2,
 
-    // Fill gradient
+    /** Fill gradient */
     fillTop: rgba(r, g, b, isDark ? 0.12 : 0.08),
     fillBottom: rgba(r, g, b, 0),
 
-    // Grid
+    /** Grid */
     gridLine: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)',
     gridLabel: isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.35)',
 
-    // Dot — always semantic
+    /** Dot — always semantic */
     dotUp: '#22c55e',
     dotDown: '#ef4444',
     dotFlat: color,
@@ -46,32 +46,32 @@ export function resolveTheme(color: string, mode: ThemeMode): LivelinePalette {
     glowDown: 'rgba(239, 68, 68, 0.18)',
     glowFlat: rgba(r, g, b, 0.12),
 
-    // Badge
+    /** Badge */
     badgeOuterBg: isDark ? 'rgba(40, 40, 40, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     badgeOuterShadow: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.15)',
     badgeBg: color,
     badgeText: '#ffffff',
 
-    // Dash line
+    /** Dash line */
     dashLine: rgba(r, g, b, 0.4),
 
-    // Reference line
+    /** Reference line */
     refLine: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)',
     refLabel: isDark ? 'rgba(255, 255, 255, 0.45)' : 'rgba(0, 0, 0, 0.4)',
 
-    // Time axis
+    /** Time axis */
     timeLabel: isDark ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 0, 0, 0.3)',
 
-    // Crosshair
+    /** Crosshair */
     crosshairLine: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.12)',
     tooltipBg: isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     tooltipText: isDark ? '#e5e5e5' : '#1a1a1a',
     tooltipBorder: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
 
-    // Background
+    /** Background */
     bgRgb: isDark ? [10, 10, 10] as [number, number, number] : [255, 255, 255] as [number, number, number],
 
-    // Fonts
+    /** Fonts */
     labelFont: '11px "SF Mono", Menlo, Monaco, "Cascadia Code", monospace',
     valueFont: '600 11px "SF Mono", Menlo, monospace',
     badgeFont: '500 11px "SF Mono", Menlo, monospace',
@@ -80,14 +80,22 @@ export function resolveTheme(color: string, mode: ThemeMode): LivelinePalette {
 
 /** Default color palette for multi-series when no colors specified. */
 export const SERIES_COLORS = [
-  '#3b82f6', // blue
-  '#ef4444', // red
-  '#22c55e', // green
-  '#f59e0b', // amber
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
+  /** blue */
+  '#3b82f6',
+  /** red */
+  '#ef4444',
+  /** green */
+  '#22c55e',
+  /** amber */
+  '#f59e0b',
+  /** violet */
+  '#8b5cf6',
+  /** pink */
+  '#ec4899',
+  /** cyan */
+  '#06b6d4',
+  /** orange */
+  '#f97316',
 ]
 
 /** Derive per-series palettes from series definitions. */

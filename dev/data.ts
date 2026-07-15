@@ -1,6 +1,6 @@
 import type { LivelinePoint, CandlePoint } from 'liveline'
 
-// --- Data generators shared by the dev pages ---
+/** --- Data generators shared by the dev pages --- */
 
 export type Volatility = 'calm' | 'normal' | 'spiky' | 'chaos'
 
@@ -9,7 +9,7 @@ export function generatePoint(prev: number, time: number, volatility: Volatility
   const bias: Record<Volatility, number> = { calm: 0.49, normal: 0.48, spiky: 0.47, chaos: 0.45 }
   const priceScale = baseValue / 100
   const scale = v[volatility] * priceScale
-  // Occasional large spikes in spiky/chaos modes
+  /** Occasional large spikes in spiky/chaos modes */
   const spike = (volatility === 'spiky' || volatility === 'chaos') && Math.random() < 0.08
     ? (Math.random() - 0.5) * scale * 3
     : 0

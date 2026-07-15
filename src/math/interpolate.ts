@@ -12,7 +12,7 @@ export function interpolateAtTime(
   if (time <= points[0].time) return points[0].value
   if (time >= points[points.length - 1].time) return points[points.length - 1].value
 
-  // Binary search for the interval containing `time`
+  /** Binary search for the interval containing `time` */
   let lo = 0
   let hi = points.length - 1
   while (hi - lo > 1) {

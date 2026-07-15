@@ -10,7 +10,7 @@ export function detectMomentum(points: LivelinePoint[], lookback = 20): Momentum
 
   const start = Math.max(0, points.length - lookback)
 
-  // Range of the full lookback for threshold calculation
+  /** Range of the full lookback for threshold calculation */
   let min = Infinity
   let max = -Infinity
   for (let i = start; i < points.length; i++) {
@@ -21,7 +21,7 @@ export function detectMomentum(points: LivelinePoint[], lookback = 20): Momentum
   const range = max - min
   if (range === 0) return 'flat'
 
-  // Only look at the last 5 points for active velocity
+  /** Only look at the last 5 points for active velocity */
   const tailStart = Math.max(start, points.length - 5)
   const first = points[tailStart].value
   const last = points[points.length - 1].value

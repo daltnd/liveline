@@ -35,19 +35,23 @@ export function drawTimeAxis(
 
   ctx.font = palette.labelFont
 
-  // Interval fully derived from target window — no dependency on the
-  // interpolating display. Prevents a one-frame flicker when the transition
-  // ends and windowSecs snaps to targetWindowSecs.
+  /**
+   * Interval fully derived from target window — no dependency on the
+   * interpolating display. Prevents a one-frame flicker when the transition
+   * ends and windowSecs snaps to targetWindowSecs.
+   */
   const targetPxPerSec = chartW / targetWindowSecs
   let interval = niceTimeInterval(targetWindowSecs)
   while (interval * targetPxPerSec < 60 && interval < targetWindowSecs) {
     interval *= 2
   }
 
-  // Generate labels: current view + 1 interval buffer.
-  // Cap at 30 labels as a safety valve — during wide→narrow transitions the
-  // target interval can be tiny relative to the current display span.
-  // For day+ intervals, align to local midnight instead of UTC epoch.
+  /**
+   * Generate labels: current view + 1 interval buffer.
+   * Cap at 30 labels as a safety valve — during wide→narrow transitions the
+   * target interval can be tiny relative to the current display span.
+   * For day+ intervals, align to local midnight instead of UTC epoch.
+   */
   const useLocalDays = interval >= 86400
   let firstTime: number
   if (useLocalDays) {
@@ -62,10 +66,12 @@ export function drawTimeAxis(
     targets.add(Math.round(t * 100))
   }
 
-  // Create or update labels. Text is updated in-place — no crossfade needed
-  // because format changes coincide with scroll transitions where the eye
-  // tracks movement, not text content. By the time labels settle, the text
-  // is already correct so nothing visibly changes on stationary labels.
+  /**
+   * Create or update labels. Text is updated in-place — no crossfade needed
+   * because format changes coincide with scroll transitions where the eye
+   * tracks movement, not text content. By the time labels settle, the text
+   * is already correct so nothing visibly changes on stationary labels.
+   */
   for (const key of targets) {
     const text = formatTime(key / 100)
     const existing = state.labels.get(key)
@@ -76,7 +82,7 @@ export function drawTimeAxis(
     }
   }
 
-  // Update alphas
+  /** Update alphas */
   for (const [key, label] of state.labels) {
     const x = toX(key / 100)
     const isTarget = targets.has(key)
@@ -90,7 +96,7 @@ export function drawTimeAxis(
     }
   }
 
-  // Draw
+  /** Draw */
   const baseAlpha = ctx.globalAlpha
   const lineY = h - pad.bottom
   const tickLen = 5
@@ -104,7 +110,7 @@ export function drawTimeAxis(
 
   ctx.textAlign = 'center'
 
-  // Collect, sort by X, resolve overlaps by keeping the more-visible label
+  /** Collect, sort by X, resolve overlaps by keeping the more-visible label */
   const labels: { x: number; alpha: number; text: string; w: number }[] = []
   for (const [key, label] of state.labels) {
     if (label.alpha < 0.02) continue
@@ -115,9 +121,11 @@ export function drawTimeAxis(
   }
   labels.sort((a, b) => a.x - b.x)
 
-  // Resolve overlaps: when two labels collide, keep the higher-alpha one.
-  // This gives a clean one-time crossover (no flickering) because one alpha
-  // is always rising while the other is falling.
+  /**
+   * Resolve overlaps: when two labels collide, keep the higher-alpha one.
+   * This gives a clean one-time crossover (no flickering) because one alpha
+   * is always rising while the other is falling.
+   */
   const drawn: typeof labels = []
   for (const label of labels) {
     const left = label.x - label.w / 2
@@ -125,7 +133,7 @@ export function drawTimeAxis(
       const prev = drawn[drawn.length - 1]
       const prevRight = prev.x + prev.w / 2
       if (left < prevRight + 8) {
-        // Overlap — swap in the higher-alpha label
+        /** Overlap — swap in the higher-alpha label */
         if (label.alpha > prev.alpha) {
           drawn[drawn.length - 1] = label
         }

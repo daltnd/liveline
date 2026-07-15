@@ -26,7 +26,7 @@ export function drawDot(
   const baseAlpha = ctx.globalAlpha
   const dim = scrubAmount * 0.7
 
-  // Expanding ring pulse (accent colored, every 1.5s) — suppress when dimmed
+  /** Expanding ring pulse (accent colored, every 1.5s) — suppress when dimmed */
   if (pulse && dim < 0.3) {
     const t = (now_ms % PULSE_INTERVAL) / PULSE_DURATION
     if (t < 1) {
@@ -41,10 +41,10 @@ export function drawDot(
     }
   }
 
-  // Outer bg color for blending
+  /** Outer bg color for blending */
   const outerRgb = parseColorRgb(palette.badgeOuterBg)
 
-  // White outer circle with subtle shadow
+  /** White outer circle with subtle shadow */
   ctx.save()
   ctx.globalAlpha = baseAlpha
   ctx.shadowColor = palette.badgeOuterShadow
@@ -56,7 +56,7 @@ export function drawDot(
   ctx.fill()
   ctx.restore()
 
-  // Colored inner dot — blend toward outer bg when dimmed
+  /** Colored inner dot — blend toward outer bg when dimmed */
   ctx.globalAlpha = baseAlpha
   ctx.beginPath()
   ctx.arc(x, y, 3.5, 0, Math.PI * 2)
@@ -81,7 +81,7 @@ export function drawMultiDot(
 ): void {
   const baseAlpha = ctx.globalAlpha
 
-  // Expanding ring pulse (series-colored, every 1.5s)
+  /** Expanding ring pulse (series-colored, every 1.5s) */
   if (pulse) {
     const t = (now_ms % PULSE_INTERVAL) / PULSE_DURATION
     if (t < 1) {
@@ -96,7 +96,7 @@ export function drawMultiDot(
     }
   }
 
-  // Solid colored dot (no white outer, no shadow)
+  /** Solid colored dot (no white outer, no shadow) */
   ctx.globalAlpha = baseAlpha
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, Math.PI * 2)
@@ -131,7 +131,7 @@ export function drawArrows(
 ): void {
   const baseAlpha = ctx.globalAlpha
 
-  // Update arrow opacities — fade out old direction fully before fading in new
+  /** Update arrow opacities — fade out old direction fully before fading in new */
   const upTarget = momentum === 'up' ? 1 : 0
   const downTarget = momentum === 'down' ? 1 : 0
 
@@ -146,9 +146,11 @@ export function drawArrows(
   if (arrows.up > 0.99) arrows.up = 1
   if (arrows.down > 0.99) arrows.down = 1
 
-  // Draw chevrons — directional cascade animation.
-  // UP: bottom arrow fires first, then top (energy moves upward).
-  // DOWN: top arrow fires first, then bottom.
+  /**
+   * Draw chevrons — directional cascade animation.
+   * UP: bottom arrow fires first, then top (energy moves upward).
+   * DOWN: top arrow fires first, then bottom.
+   */
   const cycle = (now_ms % 1400) / 1400
   const drawChevrons = (dir: -1 | 1, opacity: number) => {
     if (opacity < 0.01) return
@@ -162,8 +164,10 @@ export function drawArrows(
     ctx.lineJoin = 'round'
 
     for (let i = 0; i < 2; i++) {
-      // Stagger: arrow 0 brightens at t=0, arrow 1 at t=0.2
-      // Both always visible (min 0.3), cascade just brightens each in sequence
+      /**
+       * Stagger: arrow 0 brightens at t=0, arrow 1 at t=0.2
+       * Both always visible (min 0.3), cascade just brightens each in sequence
+       */
       const start = i * 0.2
       const dur = 0.35
       const localT = cycle - start

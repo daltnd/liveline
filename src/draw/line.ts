@@ -91,28 +91,33 @@ export function drawLine(
   const { h, pad, toX, toY, chartW, chartH } = layout
   const incomingAlpha = ctx.globalAlpha
 
-  // Build screen-space points: all historical data stays stable,
-  // but the LAST data point uses smoothValue for its Y (so big jumps
-  // animate smoothly instead of snapping). Its X stays at the original
-  // data time (stable, no per-frame drift — this is what killed jitter).
-  // Then append the live tip at (now, smoothValue).
-  // Y coordinates are clamped to chart bounds so the line hugs the edge
-  // during range transitions instead of getting hard-clipped.
+  /**
+   * Build screen-space points: all historical data stays stable,
+   * but the LAST data point uses smoothValue for its Y (so big jumps
+   * animate smoothly instead of snapping). Its X stays at the original
+   * data time (stable, no per-frame drift — this is what killed jitter).
+   * Then append the live tip at (now, smoothValue).
+   * Y coordinates are clamped to chart bounds so the line hugs the edge
+   * during range transitions instead of getting hard-clipped.
+   */
   const yMin = pad.top
   const yMax = h - pad.bottom
   const clampY = (y: number) => Math.max(yMin, Math.min(yMax, y))
 
-  // During reveal, morph Y positions from the loading squiggly shape toward real data.
-  // At chartReveal=0 the chart line traces the exact same squiggly as drawLoading/drawEmpty.
-  // Center-out: the center of the chart resolves first, edges last, so the data
-  // line appears to bloom outward from the middle.
+  /**
+   * During reveal, morph Y positions from the loading squiggly shape toward real data.
+   * At chartReveal=0 the chart line traces the exact same squiggly as drawLoading/drawEmpty.
+   * Center-out: the center of the chart resolves first, edges last, so the data
+   * line appears to bloom outward from the middle.
+   */
   const centerY = pad.top + chartH / 2
   const amplitude = chartH * LOADING_AMPLITUDE_RATIO
   const scroll = now_ms * LOADING_SCROLL_SPEED
   const morphY = chartReveal < 1
     ? (rawY: number, x: number) => {
         const t = Math.max(0, Math.min(1, (x - pad.left) / chartW))
-        const centerDist = Math.abs(t - 0.5) * 2 // 0 at center, 1 at edges
+        /** 0 at center, 1 at edges */
+        const centerDist = Math.abs(t - 0.5) * 2
         const localReveal = Math.max(0, Math.min(1, (chartReveal - centerDist * 0.4) / 0.6))
         const baseY = loadingY(t, centerY, amplitude, scroll)
         return baseY + (rawY - baseY) * localReveal
@@ -126,8 +131,10 @@ export function drawLine(
       : morphY(clampY(toY(p.value)), x)
     return [x, y]
   })
-  // Tip X: at reveal=0 extends to full chart width (matching loading/empty line),
-  // at reveal=1 sits at the live dot position. Smooth morph between.
+  /**
+   * Tip X: at reveal=0 extends to full chart width (matching loading/empty line),
+   * at reveal=1 sits at the live dot position. Smooth morph between.
+   */
   const liveTipX = toX(now)
   const fullRightX = pad.left + chartW
   const tipX = chartReveal < 1
@@ -137,8 +144,10 @@ export function drawLine(
 
   if (pts.length < 2) return
 
-  // Reveal alphas: at reveal=0, line matches loading/empty brightness (shared breath).
-  // As reveal increases, line ramps to full. Fill fades in with reveal.
+  /**
+   * Reveal alphas: at reveal=0, line matches loading/empty brightness (shared breath).
+   * As reveal increases, line ramps to full. Fill fades in with reveal.
+   */
   let lineAlpha = 1
   let fillAlpha = fillScale
   if (chartReveal < 1) {
@@ -147,9 +156,11 @@ export function drawLine(
     fillAlpha = chartReveal * fillScale
   }
 
-  // Blend line color: grey at reveal=0, accent by reveal≈0.3.
-  // colorBlend scales the accent mix — 0 forces grey (used during reverse morph
-  // so the line fades to the loading squiggly color instead of flashing blue).
+  /**
+   * Blend line color: grey at reveal=0, accent by reveal≈0.3.
+   * colorBlend scales the accent mix — 0 forces grey (used during reverse morph
+   * so the line fades to the loading squiggly color instead of flashing blue).
+   */
   const colorT = Math.min(1, chartReveal * 3) * colorBlend
   const strokeColor = (chartReveal < 1 || colorBlend < 1)
     ? blendColor(palette.gridLabel, palette.line, colorT)
@@ -157,16 +168,18 @@ export function drawLine(
 
   const isScrubbing = scrubX !== null
 
-  // Clip line + fill to chart area — during big value jumps the range
-  // lerps smoothly so the line may extend beyond the chart bounds.
-  // Clipping keeps it tidy while the range catches up.
+  /**
+   * Clip line + fill to chart area — during big value jumps the range
+   * lerps smoothly so the line may extend beyond the chart bounds.
+   * Clipping keeps it tidy while the range catches up.
+   */
   ctx.save()
   ctx.beginPath()
   ctx.rect(pad.left - 1, pad.top, chartW + 2, chartH)
   ctx.clip()
 
   if (isScrubbing) {
-    // Full-opacity portion: clipped to LEFT of scrub point
+    /** Full-opacity portion: clipped to LEFT of scrub point */
     ctx.save()
     ctx.beginPath()
     ctx.rect(0, 0, scrubX!, h)
@@ -174,7 +187,7 @@ export function drawLine(
     renderCurve(ctx, layout, palette, pts, showFill, lineAlpha, fillAlpha, strokeColor)
     ctx.restore()
 
-    // Dimmed portion: clipped to RIGHT of scrub point
+    /** Dimmed portion: clipped to RIGHT of scrub point */
     ctx.save()
     ctx.beginPath()
     ctx.rect(scrubX!, 0, layout.w - scrubX!, h)
@@ -186,11 +199,13 @@ export function drawLine(
     renderCurve(ctx, layout, palette, pts, showFill, lineAlpha, fillAlpha, strokeColor)
   }
 
-  // Restore from chart-area clip
+  /** Restore from chart-area clip */
   ctx.restore()
 
-  // Dashed current-price line — morphs from center during reveal (fades in late,
-  // so the center-vs-squiggly difference is imperceptible by the time it's visible)
+  /**
+   * Dashed current-price line — morphs from center during reveal (fades in late,
+   * so the center-vs-squiggly difference is imperceptible by the time it's visible)
+   */
   if (!skipDashLine) {
     const realCurrentY = Math.max(pad.top, Math.min(h - pad.bottom, toY(smoothValue)))
     const currentY = chartReveal < 1
@@ -209,8 +224,10 @@ export function drawLine(
   }
   ctx.globalAlpha = incomingAlpha
 
-  // Clamp last point Y so dot stays within canvas (not chart area).
-  // The dot outer circle is 6.5px + shadow — 10px margin keeps it visible.
+  /**
+   * Clamp last point Y so dot stays within canvas (not chart area).
+   * The dot outer circle is 6.5px + shadow — 10px margin keeps it visible.
+   */
   const last = pts[pts.length - 1]
   last[1] = Math.max(10, Math.min(h - 10, last[1]))
 

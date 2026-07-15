@@ -27,9 +27,11 @@ export function drawLoading(
 
   const breath = loadingBreath(now_ms)
 
-  // Sample the squiggly at ~32 evenly-spaced points — same density as
-  // typical chart data, and rendered through the same spline path so the
-  // loading→chart handoff has zero visual shape difference.
+  /**
+   * Sample the squiggly at ~32 evenly-spaced points — same density as
+   * typical chart data, and rendered through the same spline path so the
+   * loading→chart handoff has zero visual shape difference.
+   */
   const numPts = 32
   const pts: [number, number][] = []
   for (let i = 0; i <= numPts; i++) {

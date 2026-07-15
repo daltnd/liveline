@@ -1,6 +1,6 @@
 import type { LivelinePalette, ChartLayout, OrderbookData } from '../types.js'
 
-// Green: rgb(34, 197, 94), Red: rgb(239, 68, 68)
+/** Green: rgb(34, 197, 94), Red: rgb(239, 68, 68) */
 const GREEN: [number, number, number] = [34, 197, 94]
 const RED: [number, number, number] = [239, 68, 68]
 
@@ -10,17 +10,19 @@ interface StreamLabel {
   green: boolean
   life: number
   maxLife: number
-  intensity: number // 0-1, bigger orders = brighter
+  /** 0-1, bigger orders = brighter */
+  intensity: number
 }
 
 export interface OrderbookState {
   labels: StreamLabel[]
   spawnTimer: number
   smoothSpeed: number
-  // Orderbook churn tracking
+  /** Orderbook churn tracking */
   prevBidTotal: number
   prevAskTotal: number
-  churnRate: number // smoothed 0-1, how much the book is changing
+  /** smoothed 0-1, how much the book is changing */
+  churnRate: number
 }
 
 export function createOrderbookState(): OrderbookState {
@@ -31,11 +33,16 @@ export function createOrderbookState(): OrderbookState {
 }
 
 const MAX_LABELS = 50
-const LABEL_LIFETIME = 6 // seconds
-const SPAWN_INTERVAL = 40 // ms
-const MIN_LABEL_GAP = 22 // px
-const BASE_SPEED = 60 // px/s calm
-const MAX_SPEED = 160 // px/s during big activity
+/** seconds */
+const LABEL_LIFETIME = 6
+/** ms */
+const SPAWN_INTERVAL = 40
+/** px */
+const MIN_LABEL_GAP = 22
+/** px/s calm */
+const BASE_SPEED = 60
+/** px/s during big activity */
+const MAX_SPEED = 160
 
 function mixColor(
   from: [number, number, number],
@@ -77,26 +84,29 @@ export function drawOrderbook(
   for (const [, size] of orderbook.asks) { askTotal += size; if (size > maxSize) maxSize = size }
   if (maxSize === 0) return
 
-  // Measure orderbook churn: how much total size changed since last frame
-  // Normalized by the total size so it's scale-independent
+  /**
+   * Measure orderbook churn: how much total size changed since last frame
+   * Normalized by the total size so it's scale-independent
+   */
   const totalSize = bidTotal + askTotal
   const prevTotal = state.prevBidTotal + state.prevAskTotal
   let churnSignal = 0
   if (prevTotal > 0) {
     const delta = Math.abs(bidTotal - state.prevBidTotal) + Math.abs(askTotal - state.prevAskTotal)
-    churnSignal = Math.min(delta / prevTotal, 1) // 0-1
+    /** 0-1 */
+    churnSignal = Math.min(delta / prevTotal, 1)
   }
   state.prevBidTotal = bidTotal
   state.prevAskTotal = askTotal
 
-  // Smooth the churn rate (fast attack, slower decay)
+  /** Smooth the churn rate (fast attack, slower decay) */
   const churnLerp = churnSignal > state.churnRate ? 0.3 : 0.05
   state.churnRate += (churnSignal - state.churnRate) * churnLerp
 
-  // Activity = max of price momentum and orderbook churn
+  /** Activity = max of price momentum and orderbook churn */
   const activity = Math.max(Math.min(swingMagnitude * 5, 1), state.churnRate)
 
-  // Drive speed from activity
+  /** Drive speed from activity */
   const targetSpeed = BASE_SPEED + activity * (MAX_SPEED - BASE_SPEED)
   const speedLerp = 1 - Math.pow(0.95, dt / 16.67)
   state.smoothSpeed += (targetSpeed - state.smoothSpeed) * speedLerp
@@ -107,12 +117,12 @@ export function drawOrderbook(
   const topY = pad.top
   const bg = palette.bgRgb
 
-  // Spawn new labels at bottom
+  /** Spawn new labels at bottom */
   state.spawnTimer += dt
   while (state.spawnTimer >= SPAWN_INTERVAL && state.labels.length < MAX_LABELS) {
     state.spawnTimer -= SPAWN_INTERVAL
 
-    // Check overlap against ALL existing labels near spawn point
+    /** Check overlap against ALL existing labels near spawn point */
     let tooClose = false
     for (let j = 0; j < state.labels.length; j++) {
       if (Math.abs(state.labels[j].y - bottomY) < MIN_LABEL_GAP) {
@@ -122,7 +132,7 @@ export function drawOrderbook(
     }
     if (tooClose) break
 
-    // Weighted random pick
+    /** Weighted random pick */
     const allLevels: { size: number; green: boolean }[] = []
     for (const [, size] of orderbook.bids) allLevels.push({ size, green: true })
     for (const [, size] of orderbook.asks) allLevels.push({ size, green: false })
@@ -147,21 +157,22 @@ export function drawOrderbook(
     })
   }
 
-  // Update positions — decelerate as labels rise (fast at bottom, slow at top)
+  /** Update positions — decelerate as labels rise (fast at bottom, slow at top) */
   const range = bottomY - topY
   let writeIdx = 0
   for (let i = 0; i < state.labels.length; i++) {
     const l = state.labels[i]
     l.life -= dtSec
     if (l.life <= 0) continue
-    const yProgress = range > 0 ? (l.y - topY) / range : 1 // 1 at bottom, 0 at top
+    /** 1 at bottom, 0 at top */
+    const yProgress = range > 0 ? (l.y - topY) / range : 1
     l.y -= speed * (0.7 + 0.3 * yProgress) * dtSec
     if (l.y < topY - 14) continue
     state.labels[writeIdx++] = l
   }
   state.labels.length = writeIdx
 
-  // Draw
+  /** Draw */
   const baseAlpha = ctx.globalAlpha
   ctx.save()
   ctx.font = '600 13px "SF Mono", Menlo, monospace'
@@ -175,7 +186,7 @@ export function drawOrderbook(
     const l = state.labels[i]
     const lifeRatio = l.life / l.maxLife
 
-    // Fade in quickly, fade out near top of chart
+    /** Fade in quickly, fade out near top of chart */
     const fadeIn = Math.min((1 - lifeRatio) * 10, 1)
     const yRatio = (l.y - topY) / chartH
     const fadeOut = yRatio < 0.45 ? yRatio / 0.45 : 1

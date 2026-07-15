@@ -73,9 +73,11 @@
   let modeIndicatorStyle = $state<{ left: number; width: number } | null>(null)
   const hiddenSeries = new SvelteSet<string>()
 
-  // Keep the last non-empty series prop so toggle chips persist through
-  // loading/empty. The stash is a plain memo written from inside the derived —
-  // it only needs to change when seriesProp does, so no state or effect needed.
+  /**
+   * Keep the last non-empty series prop so toggle chips persist through
+   * loading/empty. The stash is a plain memo written from inside the derived —
+   * it only needs to change when seriesProp does, so no state or effect needed.
+   */
   let seriesStash: LivelineSeries[] | undefined
   const lastSeriesProp = $derived.by(() => {
     if (seriesProp && seriesProp.length > 0) {
@@ -94,13 +96,13 @@
   const isMultiSeries = $derived(seriesProp != null && seriesProp.length > 0)
   const showSeriesToggle = $derived((lastSeriesProp?.length ?? 0) > 1)
 
-  // Per-series palettes (derived from series ids + colors + theme)
+  /** Per-series palettes (derived from series ids + colors + theme) */
   const seriesPalettes = $derived.by(() => {
     if (!seriesProp || seriesProp.length === 0) return null
     return resolveSeriesPalettes(seriesProp, theme)
   })
 
-  // Normalized multi-series config for the engine
+  /** Normalized multi-series config for the engine */
   const multiSeries = $derived.by(() => {
     if (!seriesProp || !seriesPalettes) return undefined
     const palettes = seriesPalettes
@@ -113,7 +115,7 @@
     }))
   })
 
-  // Resolve momentum prop: boolean enables auto-detect, string overrides
+  /** Resolve momentum prop: boolean enables auto-detect, string overrides */
   const showMomentum = $derived(momentum !== false)
   const momentumOverride = $derived<Momentum | undefined>(
     typeof momentum === 'string' ? momentum : undefined,
@@ -127,22 +129,24 @@
     left: paddingOverride?.left ?? 12,
   })
 
-  // Degen mode: explicit prop wins
+  /** Degen mode: explicit prop wins */
   const degenEnabled = $derived(degenProp != null ? degenProp !== false : false)
   const degenOptions = $derived<DegenOptions | undefined>(
     degenEnabled ? (typeof degenProp === 'object' ? degenProp : {}) : undefined,
   )
 
-  // Window buttons state (initialized once, like the mount-time default)
+  /** Window buttons state (initialized once, like the mount-time default) */
   // svelte-ignore state_referenced_locally
   let activeWindowSecs = $state(windows && windows.length > 0 ? windows[0].secs : windowSecs)
   const effectiveWindowSecs = $derived(windows ? activeWindowSecs : windowSecs)
 
   const activeMode = $derived(lineMode ? 'line' : 'candle')
 
-  // Positions a sliding indicator under the active pill. Attached only to
-  // the active button ({@attach isActive && ...}), so it runs on mount and
-  // re-runs exactly when the selection moves to a different button.
+  /**
+   * Positions a sliding indicator under the active pill. Attached only to
+   * the active button ({@attach isActive && ...}), so it runs on mount and
+   * re-runs exactly when the selection moves to a different button.
+   */
   function measureIndicator(
     set: (rect: { left: number; width: number }) => void,
   ): Attachment<HTMLElement> {
@@ -155,13 +159,13 @@
     }
   }
 
-  // Series toggle handler — prevent hiding the last visible series
+  /** Series toggle handler — prevent hiding the last visible series */
   function handleSeriesToggle(id: string) {
     if (hiddenSeries.has(id)) {
       hiddenSeries.delete(id)
       onSeriesToggle?.(id, true)
     } else {
-      // Count visible series — don't hide last one
+      /** Count visible series — don't hide last one */
       const totalSeries = seriesProp?.length ?? 0
       const visibleCount = totalSeries - hiddenSeries.size
       if (visibleCount <= 1) return
@@ -214,12 +218,14 @@
     hiddenSeriesIds: hiddenSeries,
   })
 
-  // The engine owns the rAF loop and reads fresh config every frame. It reads
-  // a plain snapshot (kept current by a pre-effect) rather than the derived
-  // itself: during an outro (e.g. inside LivelineTransition) the component's
-  // reactive graph is torn down before the last frames draw, and reading an
-  // inert derived would warn — the frozen snapshot lets the chart fade out
-  // with its last state instead.
+  /**
+   * The engine owns the rAF loop and reads fresh config every frame. It reads
+   * a plain snapshot (kept current by a pre-effect) rather than the derived
+   * itself: during an outro (e.g. inside LivelineTransition) the component's
+   * reactive graph is torn down before the last frames draw, and reading an
+   * inert derived would warn — the frozen snapshot lets the chart fade out
+   * with its last state instead.
+   */
   let currentConfig: EngineConfig
   $effect.pre(() => {
     currentConfig = engineConfig

@@ -6,7 +6,7 @@ import { interpolateAtTime } from '../interpolate.js'
 import { niceTimeInterval } from '../intervals.js'
 import type { LivelinePoint } from '../../types.js'
 
-// -- lerp --
+/** -- lerp -- */
 
 describe('lerp', () => {
   it('returns target when speed is 1', () => {
@@ -37,7 +37,7 @@ describe('lerp', () => {
   })
 })
 
-// -- computeRange --
+/** -- computeRange -- */
 
 describe('computeRange', () => {
   const pts = (values: number[]): LivelinePoint[] =>
@@ -71,7 +71,7 @@ describe('computeRange', () => {
   })
 })
 
-// -- detectMomentum --
+/** -- detectMomentum -- */
 
 describe('detectMomentum', () => {
   const pts = (values: number[]): LivelinePoint[] =>
@@ -90,7 +90,7 @@ describe('detectMomentum', () => {
   })
 
   it('returns flat for stable data', () => {
-    // Tail (last 5) delta must be < 30% of lookback range to be flat
+    /** Tail (last 5) delta must be < 30% of lookback range to be flat */
     expect(detectMomentum(pts([10, 10.1, 10.2, 10.05, 10.15, 10.1]))).toBe('flat')
   })
 
@@ -99,7 +99,7 @@ describe('detectMomentum', () => {
   })
 })
 
-// -- interpolateAtTime --
+/** -- interpolateAtTime -- */
 
 describe('interpolateAtTime', () => {
   const pts: LivelinePoint[] = [
@@ -138,7 +138,7 @@ describe('interpolateAtTime', () => {
   })
 })
 
-// -- niceTimeInterval --
+/** -- niceTimeInterval -- */
 
 describe('niceTimeInterval', () => {
   it('returns 2s for very short windows', () => {

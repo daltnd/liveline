@@ -39,7 +39,8 @@ function divisible(val: number, interval: number): boolean {
 /** Persistent state — interval hysteresis + per-label alpha smoothing. */
 export interface GridState {
   interval: number
-  labels: Map<number, number> // key → alpha
+  /** key → alpha */
+  labels: Map<number, number>
 }
 
 const FADE_IN = 0.18
@@ -58,18 +59,18 @@ export function drawGrid(
   if (chartH <= 0 || valRange <= 0) return
   const pxPerUnit = chartH / valRange
 
-  // Coarse interval: always-visible anchor labels
+  /** Coarse interval: always-visible anchor labels */
   const coarse = pickInterval(valRange, pxPerUnit, 36, state.interval)
   state.interval = coarse
 
-  // Fine interval: fills the gaps between coarse labels
+  /** Fine interval: fills the gaps between coarse labels */
   const fine = coarse / 2
   const finePx = fine * pxPerUnit
 
-  // Target alpha for fine labels — hide when cramped, fade in with space
+  /** Target alpha for fine labels — hide when cramped, fade in with space */
   const fineTarget = finePx < 40 ? 0 : finePx >= 60 ? 1 : (finePx - 40) / 20
 
-  // Edge fade
+  /** Edge fade */
   const fadeZone = 32
   const edgeAlpha = (y: number): number => {
     const fromEdge = Math.min(y - pad.top, h - pad.bottom - y)
@@ -78,7 +79,7 @@ export function drawGrid(
     return fromEdge / fadeZone
   }
 
-  // --- Phase 1: compute target alpha for every current grid label ---
+  /** --- Phase 1: compute target alpha for every current grid label --- */
   const targets = new Map<number, number>()
   const first = Math.ceil(minVal / fine) * fine
   for (let val = first; val <= maxVal; val += fine) {
@@ -90,7 +91,7 @@ export function drawGrid(
     targets.set(key, target)
   }
 
-  // --- Phase 2: update all tracked label alphas ---
+  /** --- Phase 2: update all tracked label alphas --- */
   for (const [key, alpha] of state.labels) {
     const target = targets.get(key) ?? 0
     const speed = target >= alpha ? FADE_IN : FADE_OUT
@@ -103,14 +104,14 @@ export function drawGrid(
     }
   }
 
-  // New labels not yet in state
+  /** New labels not yet in state */
   for (const [key, target] of targets) {
     if (!state.labels.has(key)) {
       state.labels.set(key, target * FADE_IN)
     }
   }
 
-  // --- Phase 3: draw ---
+  /** --- Phase 3: draw --- */
   const baseAlpha = ctx.globalAlpha
   ctx.setLineDash([1, 3])
   ctx.lineWidth = 1

@@ -1,7 +1,8 @@
 import type { Snippet } from 'svelte'
 
 export interface LivelinePoint {
-  time: number  // unix seconds
+  /** unix seconds */
+  time: number
   value: number
 }
 
@@ -35,8 +36,10 @@ export interface WindowOption {
 }
 
 export interface OrderbookData {
-  bids: [number, number][]  // [price, size][]
-  asks: [number, number][]  // [price, size][]
+  /** [price, size][] */
+  bids: [number, number][]
+  /** [price, size][] */
+  asks: [number, number][]
 }
 
 export interface DegenOptions {
@@ -58,68 +61,93 @@ export interface LivelineProps {
   data: LivelinePoint[]
   value: number
 
-  // Multi-series mode — when provided, overrides data/value/color
+  /** Multi-series mode — when provided, overrides data/value/color */
   series?: LivelineSeries[]
 
-  // Appearance
+  /** Appearance */
   theme?: ThemeMode
   color?: string
 
-  // Time
+  /** Time */
   window?: number
 
-  // Feature flags
+  /** Feature flags */
   grid?: boolean
   badge?: boolean
   momentum?: boolean | Momentum
   fill?: boolean
-  loading?: boolean         // Show loading animation — breathing line (default: false)
-  paused?: boolean          // Pause chart scrolling (default: false)
-  emptyText?: string        // Text shown in the empty state (default: 'No data to display')
-  scrub?: boolean           // Enable crosshair scrubbing on hover (default: true)
-  exaggerate?: boolean      // Tight Y-axis range — small moves fill chart height (default: false)
-  showValue?: boolean       // Show live value as DOM text overlay (default: false)
-  valueMomentumColor?: boolean // Color the value text by momentum — green/red (default: false)
-  degen?: boolean | DegenOptions  // Degen mode — burst particles + chart shake on momentum swings (default: false)
-  badgeTail?: boolean       // Show pointed tail on badge pill (default: true)
+  /** Show loading animation — breathing line (default: false) */
+  loading?: boolean
+  /** Pause chart scrolling (default: false) */
+  paused?: boolean
+  /** Text shown in the empty state (default: 'No data to display') */
+  emptyText?: string
+  /** Enable crosshair scrubbing on hover (default: true) */
+  scrub?: boolean
+  /** Tight Y-axis range — small moves fill chart height (default: false) */
+  exaggerate?: boolean
+  /** Show live value as DOM text overlay (default: false) */
+  showValue?: boolean
+  /** Color the value text by momentum — green/red (default: false) */
+  valueMomentumColor?: boolean
+  /** Degen mode — burst particles + chart shake on momentum swings (default: false) */
+  degen?: boolean | DegenOptions
+  /** Show pointed tail on badge pill (default: true) */
+  badgeTail?: boolean
 
-  // Time window buttons
+  /** Time window buttons */
   windows?: WindowOption[]
   onWindowChange?: (secs: number) => void
   windowStyle?: WindowStyle
 
-  // Badge
-  badgeVariant?: BadgeVariant  // Badge visual style: 'default' (accent) or 'minimal' (white + grey text)
+  /** Badge */
+  /** Badge visual style: 'default' (accent) or 'minimal' (white + grey text) */
+  badgeVariant?: BadgeVariant
 
-  // Crosshair
-  tooltipY?: number        // Vertical offset for crosshair tooltip text (default: 14)
-  tooltipOutline?: boolean // Stroke outline around crosshair tooltip text for readability (default: true)
+  /** Crosshair */
+  /** Vertical offset for crosshair tooltip text (default: 14) */
+  tooltipY?: number
+  /** Stroke outline around crosshair tooltip text for readability (default: true) */
+  tooltipOutline?: boolean
 
-  // Orderbook
+  /** Orderbook */
   orderbook?: OrderbookData
 
-  // Optional
+  /** Optional */
   referenceLine?: ReferenceLine
   formatValue?: (v: number) => string
   formatTime?: (t: number) => string
   lerpSpeed?: number
   padding?: Padding
   onHover?: (point: HoverPoint | null) => void
-  cursor?: string          // CSS cursor on hover (default: 'crosshair')
-  pulse?: boolean          // Pulsing ring on live dot (default: true)
-  lineWidth?: number       // Stroke width of the main line in px (default: 2)
+  /** CSS cursor on hover (default: 'crosshair') */
+  cursor?: string
+  /** Pulsing ring on live dot (default: true) */
+  pulse?: boolean
+  /** Stroke width of the main line in px (default: 2) */
+  lineWidth?: number
 
-  // Candlestick mode
-  mode?: 'line' | 'candle'       // Chart type (default: 'line')
-  candles?: CandlePoint[]         // OHLC candle data (required when mode='candle')
-  candleWidth?: number            // Seconds per candle (required when mode='candle')
-  liveCandle?: CandlePoint        // Current live candle with real-time OHLC
-  lineMode?: boolean              // Morph candles into line display
-  lineData?: LivelinePoint[]      // Tick-level data for density transition
-  lineValue?: number              // Current tick value for density transition
-  onModeChange?: (mode: 'line' | 'candle') => void  // Built-in toggle callback
-  onSeriesToggle?: (id: string, visible: boolean) => void  // Multi-series toggle callback
-  seriesToggleCompact?: boolean  // Show only colored dots (no labels) in series toggle (default: false)
+  /** Candlestick mode */
+  /** Chart type (default: 'line') */
+  mode?: 'line' | 'candle'
+  /** OHLC candle data (required when mode='candle') */
+  candles?: CandlePoint[]
+  /** Seconds per candle (required when mode='candle') */
+  candleWidth?: number
+  /** Current live candle with real-time OHLC */
+  liveCandle?: CandlePoint
+  /** Morph candles into line display */
+  lineMode?: boolean
+  /** Tick-level data for density transition */
+  lineData?: LivelinePoint[]
+  /** Current tick value for density transition */
+  lineValue?: number
+  /** Built-in toggle callback */
+  onModeChange?: (mode: 'line' | 'candle') => void
+  /** Multi-series toggle callback */
+  onSeriesToggle?: (id: string, visible: boolean) => void
+  /** Show only colored dots (no labels) in series toggle (default: false) */
+  seriesToggleCompact?: boolean
 
   class?: string
   style?: string
@@ -137,7 +165,8 @@ export interface LivelineTransitionProps {
 }
 
 export interface CandlePoint {
-  time: number   // unix seconds — candle open time
+  /** unix seconds — candle open time */
+  time: number
   open: number
   high: number
   low: number
@@ -145,19 +174,19 @@ export interface CandlePoint {
 }
 
 export interface LivelinePalette {
-  // Line
+  /** Line */
   line: string
   lineWidth: number
 
-  // Fill gradient
+  /** Fill gradient */
   fillTop: string
   fillBottom: string
 
-  // Grid
+  /** Grid */
   gridLine: string
   gridLabel: string
 
-  // Dot
+  /** Dot */
   dotUp: string
   dotDown: string
   dotFlat: string
@@ -165,32 +194,32 @@ export interface LivelinePalette {
   glowDown: string
   glowFlat: string
 
-  // Badge
+  /** Badge */
   badgeOuterBg: string
   badgeOuterShadow: string
   badgeBg: string
   badgeText: string
 
-  // Dash line
+  /** Dash line */
   dashLine: string
 
-  // Reference line
+  /** Reference line */
   refLine: string
   refLabel: string
 
-  // Time axis
+  /** Time axis */
   timeLabel: string
 
-  // Crosshair
+  /** Crosshair */
   crosshairLine: string
   tooltipBg: string
   tooltipText: string
   tooltipBorder: string
 
-  // Background (for color fading — labels fade toward bg instead of alpha)
+  /** Background (for color fading — labels fade toward bg instead of alpha) */
   bgRgb: [number, number, number]
 
-  // Fonts
+  /** Fonts */
   labelFont: string
   valueFont: string
   badgeFont: string
