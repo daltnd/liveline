@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { Snippet } from 'svelte'
 
 export interface LivelinePoint {
   time: number  // unix seconds
@@ -121,8 +121,19 @@ export interface LivelineProps {
   onSeriesToggle?: (id: string, visible: boolean) => void  // Multi-series toggle callback
   seriesToggleCompact?: boolean  // Show only colored dots (no labels) in series toggle (default: false)
 
-  className?: string
-  style?: CSSProperties
+  class?: string
+  style?: string
+}
+
+export interface LivelineTransitionProps {
+  /** Key of the active view to display. Must match a declared snippet's name. */
+  active: string
+  /** Cross-fade duration in ms (default 300) */
+  duration?: number
+  class?: string
+  style?: string
+  /** One named snippet per possible `active` value */
+  [key: string]: Snippet | string | number | undefined
 }
 
 export interface CandlePoint {

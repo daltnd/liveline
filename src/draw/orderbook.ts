@@ -1,4 +1,4 @@
-import type { LivelinePalette, ChartLayout, OrderbookData } from '../types'
+import type { LivelinePalette, ChartLayout, OrderbookData } from '../types.js'
 
 // Green: rgb(34, 197, 94), Red: rgb(239, 68, 68)
 const GREEN: [number, number, number] = [34, 197, 94]

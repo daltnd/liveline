@@ -1,4 +1,4 @@
-import type { Momentum, LivelinePoint } from '../types'
+import type { Momentum, LivelinePoint } from '../types.js'
 
 /**
  * Auto-detect momentum from recent data points.

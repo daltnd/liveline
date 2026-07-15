@@ -11,3 +11,6 @@ dev/multiline.*
 .env.*
 !.env.example
 .claude/settings.local.json
+
+# Svelte
+.svelte-kit/

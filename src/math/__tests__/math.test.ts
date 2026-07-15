@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { lerp } from '../lerp'
-import { computeRange } from '../range'
-import { detectMomentum } from '../momentum'
-import { interpolateAtTime } from '../interpolate'
-import { niceTimeInterval } from '../intervals'
-import type { LivelinePoint } from '../../types'
+import { lerp } from '../lerp.js'
+import { computeRange } from '../range.js'
+import { detectMomentum } from '../momentum.js'
+import { interpolateAtTime } from '../interpolate.js'
+import { niceTimeInterval } from '../intervals.js'
+import type { LivelinePoint } from '../../types.js'
 
 // -- lerp --
 

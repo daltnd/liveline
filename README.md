@@ -1,6 +1,6 @@
 # Liveline
 
-Real-time animated charts for React. Line, multi-series, and candlestick modes, canvas-rendered, 60fps, zero CSS imports.
+Real-time animated charts for Svelte. Line, multi-series, and candlestick modes, canvas-rendered, 60fps, zero CSS imports.
 
 ## Install
 
@@ -8,27 +8,25 @@ Real-time animated charts for React. Line, multi-series, and candlestick modes, 
 pnpm add liveline
 ```
 
-Peer dependency: `react >=18`.
+Peer dependency: `svelte ^5.29.0`.
 
 ## Quick Start
 
-```tsx
-import { Liveline } from 'liveline'
-import type { LivelinePoint } from 'liveline'
+```svelte
+<script lang="ts">
+  import { Liveline } from 'liveline'
+  import type { LivelinePoint } from 'liveline'
 
-function Chart() {
-  const [data, setData] = useState<LivelinePoint[]>([])
-  const [value, setValue] = useState(0)
+  let data = $state<LivelinePoint[]>([])
+  let value = $state(0)
 
   // Feed data from WebSocket, polling, etc.
   // Each point: { time: unixSeconds, value: number }
+</script>
 
-  return (
-    <div style={{ height: 300 }}>
-      <Liveline data={data} value={value} color="#3b82f6" theme="dark" />
-    </div>
-  )
-}
+<div style="height: 300px">
+  <Liveline {data} {value} color="#3b82f6" theme="dark" />
+</div>
 ```
 
 The component fills its parent container. Set a height on the parent. Pass `data` as a growing array of points and `value` as the latest number — Liveline handles smooth interpolation between updates.
@@ -137,20 +135,20 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 | `padding` | `Padding` | `{ top: 12, right: auto, bottom: 28, left: 12 }` | Chart padding override (`right` is 80/54/12 based on badge/grid) |
 | `onHover` | `(point \| null) => void` | — | Hover callback with `{ time, value, x, y }` |
 | `cursor` | `string` | `'crosshair'` | CSS cursor on canvas hover |
-| `className` | `string` | — | Container class |
-| `style` | `CSSProperties` | — | Container styles |
+| `class` | `string` | — | Container class |
+| `style` | `string` | — | Container styles |
 
 ## Examples
 
 ### Basic (line + badge)
 
-```tsx
+```svelte
 <Liveline data={data} value={value} color="#3b82f6" theme="dark" />
 ```
 
 ### Candlestick (minimal)
 
-```tsx
+```svelte
 <Liveline
   mode="candle"
   data={ticks}
@@ -165,7 +163,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Candlestick (line mode toggle + time windows)
 
-```tsx
+```svelte
 <Liveline
   mode="candle"
   data={ticks}
@@ -176,7 +174,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
   lineMode={showLine}
   lineData={ticks}
   lineValue={latestTick}
-  onModeChange={(mode) => setShowLine(mode === 'line')}
+  onModeChange={(mode) => showLine = mode === 'line'}
   color="#f7931a"
   formatValue={(v) => `$${v.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}
   windows={[
@@ -189,7 +187,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Crypto-style (momentum + degen + exaggerate)
 
-```tsx
+```svelte
 <Liveline
   data={data}
   value={value}
@@ -204,7 +202,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Dashboard (showValue + windows + no badge)
 
-```tsx
+```svelte
 <Liveline
   data={data}
   value={value}
@@ -222,7 +220,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Multi-series (prediction market)
 
-```tsx
+```svelte
 <Liveline
   data={[]}
   value={0}
@@ -246,7 +244,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Loading + pause
 
-```tsx
+```svelte
 <Liveline
   data={data}
   value={value}
@@ -257,7 +255,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 
 ### Orderbook (orderbook data + particles)
 
-```tsx
+```svelte
 <Liveline
   data={data}
   value={value}
@@ -281,7 +279,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 - **Theme derivation** — full palette from one accent color + light/dark mode
 - **Binary search interpolation** for hover value lookup
 
-No CSS imports. No external dependencies beyond React.
+No CSS imports. No external dependencies beyond Svelte.
 
 ## License
 

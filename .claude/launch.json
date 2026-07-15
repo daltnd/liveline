@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "liveline-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "vite"],
+      "cwd": "dev",
+      "autoPort": true
+    }
+  ]
+}

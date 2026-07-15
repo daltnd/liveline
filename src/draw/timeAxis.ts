@@ -1,6 +1,6 @@
-import type { LivelinePalette, ChartLayout } from '../types'
-import { niceTimeInterval } from '../math/intervals'
-import { lerp } from '../math/lerp'
+import type { LivelinePalette, ChartLayout } from '../types.js'
+import { niceTimeInterval } from '../math/intervals.js'
+import { lerp } from '../math/lerp.js'
 
 export interface TimeAxisState {
   labels: Map<number, { alpha: number; text: string }>

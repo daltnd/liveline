@@ -1,4 +1,4 @@
-import type { LivelinePoint } from '../types'
+import type { LivelinePoint } from '../types.js'
 
 /**
  * Binary search to find interpolated value at a given time.

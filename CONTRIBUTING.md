@@ -23,7 +23,7 @@ Open an issue first, especially for larger changes. It helps talk through the ap
 
 - Match existing patterns
 - Keep PRs focused (one change per PR)
-- No external runtime dependencies beyond React
+- No external runtime dependencies beyond Svelte
 
 ## Questions?
 

@@ -3,12 +3,11 @@
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "declaration": true,
-    "outDir": "dist"
+    "noEmit": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts", "src/**/*.svelte"]
 }

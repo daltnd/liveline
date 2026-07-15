@@ -1,4 +1,4 @@
-import type { LivelinePalette, ChartLayout } from '../types'
+import type { LivelinePalette, ChartLayout } from '../types.js'
 
 export interface MultiSeriesHoverEntry {
   color: string

@@ -1,4 +1,4 @@
-import type { Momentum, DegenOptions } from '../types'
+import type { Momentum, DegenOptions } from '../types.js'
 
 interface Particle {
   x: number

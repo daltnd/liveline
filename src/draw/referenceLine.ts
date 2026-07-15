@@ -1,4 +1,4 @@
-import type { LivelinePalette, ChartLayout, ReferenceLine } from '../types'
+import type { LivelinePalette, ChartLayout, ReferenceLine } from '../types.js'
 
 export function drawReferenceLine(
   ctx: CanvasRenderingContext2D,

@@ -1,5 +1,5 @@
-import type { LivelinePalette, ChartLayout } from '../types'
-import { lerp } from '../math/lerp'
+import type { LivelinePalette, ChartLayout } from '../types.js'
+import { lerp } from '../math/lerp.js'
 
 /**
  * Pick a nice interval using TradingView's cycling divisor approach.

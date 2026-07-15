@@ -1,6 +1,6 @@
-import type { LivelinePalette, ChartLayout, LivelinePoint } from '../types'
-import { drawSpline } from '../math/spline'
-import { loadingY, loadingBreath, LOADING_AMPLITUDE_RATIO, LOADING_SCROLL_SPEED } from './loadingShape'
+import type { LivelinePalette, ChartLayout, LivelinePoint } from '../types.js'
+import { drawSpline } from '../math/spline.js'
+import { loadingY, loadingBreath, LOADING_AMPLITUDE_RATIO, LOADING_SCROLL_SPEED } from './loadingShape.js'
 
 /** Parse a CSS color to [r, g, b, a]. Handles hex, rgb(), rgba(). */
 function parseRgba(color: string): [number, number, number, number] {

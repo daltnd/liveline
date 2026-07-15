@@ -1,4 +1,4 @@
-import type { LivelinePoint } from '../types'
+import type { LivelinePoint } from '../types.js'
 
 /**
  * Compute visible Y range from data points + current value.

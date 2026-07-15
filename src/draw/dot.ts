@@ -1,7 +1,7 @@
-import type { Momentum, LivelinePalette } from '../types'
-import type { ArrowState } from './index'
-import { parseColorRgb } from '../theme'
-import { lerp } from '../math/lerp'
+import type { Momentum, LivelinePalette } from '../types.js'
+import type { ArrowState } from './index.js'
+import { parseColorRgb } from '../theme.js'
+import { lerp } from '../math/lerp.js'
 
 const PULSE_INTERVAL = 1500
 const PULSE_DURATION = 900

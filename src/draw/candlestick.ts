@@ -1,6 +1,6 @@
-import type { ChartLayout, LivelinePalette, CandlePoint } from '../types'
+import type { ChartLayout, LivelinePalette, CandlePoint } from '../types.js'
 
-export type { CandlePoint } from '../types'
+export type { CandlePoint } from '../types.js'
 
 const BULL = '#22c55e'
 const BEAR = '#ef4444'

@@ -1,4 +1,4 @@
-import type { ThemeMode, LivelinePalette, LivelineSeries } from './types'
+import type { ThemeMode, LivelinePalette, LivelineSeries } from './types.js'
 
 /** Parse any CSS color string to [r, g, b]. Handles hex (#rgb, #rrggbb), rgb(), rgba(). */
 export function parseColorRgb(color: string): [number, number, number] {
