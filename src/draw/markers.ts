@@ -29,7 +29,7 @@ export function drawMarkers(
       ctx.save()
       ctx.globalAlpha *= 0.6
       ctx.setLineDash([4, 4])
-      ctx.strokeStyle = palette.line
+      ctx.strokeStyle = m.color ?? palette.line
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo(x, y + 8)
