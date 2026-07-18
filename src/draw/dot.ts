@@ -22,9 +22,11 @@ export function drawDot(
   pulse: boolean = true,
   scrubAmount: number = 0,
   now_ms: number = performance.now(),
+  color?: string,
 ): void {
   const baseAlpha = ctx.globalAlpha
   const dim = scrubAmount * 0.7
+  const dotColor = color ?? palette.line
 
   /** Expanding ring pulse (accent colored, every 1.5s) — suppress when dimmed */
   if (pulse && dim < 0.3) {
@@ -61,10 +63,10 @@ export function drawDot(
   ctx.beginPath()
   ctx.arc(x, y, 3.5, 0, Math.PI * 2)
   if (dim > 0.01) {
-    const lineRgb = parseColorRgb(palette.line)
+    const lineRgb = parseColorRgb(dotColor)
     ctx.fillStyle = lerpColor(lineRgb, outerRgb, dim)
   } else {
-    ctx.fillStyle = palette.line
+    ctx.fillStyle = dotColor
   }
   ctx.fill()
 }
