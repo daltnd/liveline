@@ -8,6 +8,7 @@ export type {
   LivelineTransitionProps,
   LivelinePoint,
   LivelineSeries,
+  Marker,
   ReferenceLine,
   Momentum,
   ThemeMode,

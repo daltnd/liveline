@@ -113,6 +113,10 @@ export interface LivelineProps {
   /** Orderbook */
   orderbook?: OrderbookData
 
+  /** Markers */
+  markers?: Marker[]
+  onMarkerChange?: (id: string | null) => void
+
   /** Optional */
   referenceLine?: ReferenceLine
   formatValue?: (v: number) => string
@@ -162,6 +166,14 @@ export interface LivelineTransitionProps {
   style?: string
   /** One named snippet per possible `active` value */
   [key: string]: Snippet | string | number | undefined
+}
+
+export interface Marker {
+  /** passed back through onMarkerChange */
+  id: string
+  /** the point in time the marker is anchored to */
+  time: number
+  color?: string
 }
 
 export interface CandlePoint {

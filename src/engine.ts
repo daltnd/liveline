@@ -1,4 +1,4 @@
-import type { LivelinePoint, LivelinePalette, LivelineSeries, Momentum, ReferenceLine, HoverPoint, Padding, ChartLayout, OrderbookData, DegenOptions, BadgeVariant, CandlePoint } from './types.js'
+import type { LivelinePoint, LivelinePalette, LivelineSeries, Momentum, ReferenceLine, HoverPoint, Padding, ChartLayout, OrderbookData, DegenOptions, BadgeVariant, CandlePoint, Marker } from './types.js'
 import { lerp } from './math/lerp.js'
 import { computeRange } from './math/range.js'
 import { detectMomentum } from './math/momentum.js'
@@ -29,6 +29,8 @@ export interface EngineConfig {
   formatTime: (t: number) => string
   padding: Required<Padding>
   onHover?: (point: HoverPoint | null) => void
+  markers?: Marker[]
+  onMarkerChange?: (id: string | null) => void
   showPulse: boolean
   scrub: boolean
   exaggerate: boolean
@@ -618,6 +620,9 @@ export function createLivelineEngine(
     lastHover: null as { x: number; value: number; time: number } | null,
     lastHoverEntries: [] as { color: string; label: string; value: number }[],
 
+    /** Last emitted active marker id */
+    activeMarkerId: null as string | null,
+
     /** Reveal state (loading -> chart morph): 0 = loading/empty, 1 = fully revealed */
     chartReveal: 0,
 
@@ -758,6 +763,24 @@ export function createLivelineEngine(
     }
   }
   document.addEventListener('visibilitychange', onVisibility)
+
+  /** Active marker — the latest marker `now` has passed (or null).
+   *  Fires cfg.onMarkerChange when the id changes. */
+  function syncActiveMarker(cfg: EngineConfig, now: number): string | null {
+    let id: string | null = null
+    let best = -Infinity
+    for (const m of cfg.markers ?? []) {
+      if (m.time <= now && m.time > best) {
+        best = m.time
+        id = m.id
+      }
+    }
+    if (id !== st.activeMarkerId) {
+      st.activeMarkerId = id
+      cfg.onMarkerChange?.(id)
+    }
+    return id
+  }
 
   /** rAF draw loop */
   function draw() {
@@ -1849,6 +1872,12 @@ export function createLivelineEngine(
     st.lastHover = hoverResult.lastHover
     const { hoverX: drawHoverX, hoverValue: drawHoverValue, hoverTime: drawHoverTime } = hoverResult
 
+    /** Active marker follows the scrub position while hovering */
+    const activeMarkerId = syncActiveMarker(
+      cfg,
+      hoverResult.isActiveHover && drawHoverTime !== null ? drawHoverTime : now,
+    )
+
     /** Compute swing magnitude for particles (recent velocity / visible range) */
     const lookback = Math.min(5, visible.length - 1)
     const recentDelta = lookback > 0
@@ -1868,6 +1897,8 @@ export function createLivelineEngine(
       showPulse: cfg.showPulse,
       showFill: cfg.showFill,
       referenceLine: cfg.referenceLine,
+      markers: cfg.markers,
+      activeMarkerId,
       hoverX: drawHoverX,
       hoverValue: drawHoverValue,
       hoverTime: drawHoverTime,

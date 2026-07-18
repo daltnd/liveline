@@ -1,6 +1,7 @@
-import type { LivelinePalette, ChartLayout, LivelinePoint, Momentum, ReferenceLine, OrderbookData, DegenOptions, CandlePoint } from '../types.js'
+import type { LivelinePalette, ChartLayout, LivelinePoint, Momentum, ReferenceLine, OrderbookData, DegenOptions, CandlePoint, Marker } from '../types.js'
 import { drawGrid, type GridState } from './grid.js'
 import { drawLine } from './line.js'
+import { drawMarkers } from './markers.js'
 import { drawDot, drawArrows, drawSimpleDot, drawMultiDot } from './dot.js'
 import { drawCrosshair, drawMultiCrosshair } from './crosshair.js'
 import type { MultiSeriesHoverEntry } from './crosshair.js'
@@ -40,6 +41,8 @@ export interface DrawOptions {
   showPulse: boolean
   showFill: boolean
   referenceLine?: ReferenceLine
+  markers?: Marker[]
+  activeMarkerId?: string | null
   hoverX: number | null
   hoverValue: number | null
   hoverTime: number | null
@@ -146,6 +149,14 @@ export function drawFrame(
       drawTimeAxis(ctx, layout, palette, opts.windowSecs, opts.targetWindowSecs, opts.formatTime, opts.timeAxisState, opts.dt)
       ctx.restore()
     }
+  }
+
+  /** 4b. Markers - time-anchored points with vertical dashed line when active */
+  if (opts.markers?.length && reveal > 0.3) {
+    ctx.save()
+    ctx.globalAlpha = Math.min(1, (reveal - 0.3) / 0.7)
+    drawMarkers(ctx, layout, palette, opts.markers, opts.visible, opts.activeMarkerId ?? null)
+    ctx.restore()
   }
 
   if (pts && pts.length > 0) {
