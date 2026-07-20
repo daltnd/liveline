@@ -45,6 +45,8 @@ export interface EngineConfig {
   loading?: boolean
   paused?: boolean
   emptyText?: string
+  /** Custom clock — "now" in unix seconds, read once per frame (default: Date.now()/1000) */
+  now?: () => number
 
   /** Candlestick mode */
   mode: 'line' | 'candle'
@@ -629,8 +631,10 @@ export function createLivelineEngine(
     /** Pause state */
     /** 0 = playing, 1 = fully paused */
     pauseProgress: 0,
-    /** accumulated seconds behind real time */
+    /** accumulated seconds the chart lags the data clock */
     timeDebt: 0,
+    /** last raw clock sample, for measuring per-frame clock advance */
+    lastRawNow: null as number | null,
 
     /** Data stash for reverse morph (chart -> flat line when data disappears) */
     lastData: [] as LivelinePoint[],
@@ -882,8 +886,16 @@ export function createLivelineEngine(
     const pauseProgress = st.pauseProgress
     const pausedDt = dt * (1 - pauseProgress)
 
-    const realDtSec = dt / 1000
-    st.timeDebt += realDtSec * pauseProgress
+    /**
+     * Debt accrues from the data clock's own advance, not wall dt — a
+     * clock frozen during pause (media playback) accrues none, so the
+     * chart holds still instead of drifting backwards. A single
+     * non-finite sample would poison timeDebt forever, hence the guard.
+     */
+    let rawNow = cfg.now?.() ?? Date.now() / 1000
+    if (!Number.isFinite(rawNow)) rawNow = st.lastRawNow ?? Date.now() / 1000
+    st.timeDebt += Math.max(0, rawNow - (st.lastRawNow ?? rawNow)) * pauseProgress
+    st.lastRawNow = rawNow
     /**
      * Only drain time debt when unpausing — during pausing, let it
      * accumulate freely so the chart decelerates smoothly
@@ -895,6 +907,9 @@ export function createLivelineEngine(
       st.timeDebt = lerp(st.timeDebt, 0, catchUpSpeed, dt)
       if (st.timeDebt < 0.01) st.timeDebt = 0
     }
+
+    /** Single timestamp every chart mode scrolls against this frame */
+    const dataNow = rawNow - st.timeDebt
 
     /** --- Loading alpha (loading ↔ empty crossfade) --- */
     const loadingTarget = cfg.loading ? 1 : 0
@@ -1016,9 +1031,9 @@ export function createLivelineEngine(
       const candleBuffer = CANDLE_BUFFER_NO_BADGE
 
       /** Frozen now — prevent candles from scrolling during reverse morph */
-      if (hasData) st.frozenNow = Date.now() / 1000 - st.timeDebt
+      if (hasData) st.frozenNow = dataNow
       const now = (hasData || chartReveal < 0.005)
-        ? Date.now() / 1000 - st.timeDebt
+        ? dataNow
         : st.frozenNow
       const rawLive = st.pausedCandles ? (st.pausedLive ?? undefined) : cfg.liveCandle
       let effectiveLineData = st.pausedLineData ?? cfg.lineData
@@ -1517,8 +1532,8 @@ export function createLivelineEngine(
     /** Use first series data for window transition seeding */
     const firstSeries = effectiveMultiSeries[0]
     const transition = st.windowTransition
-    if (hasData) st.frozenNow = Date.now() / 1000 - st.timeDebt
-    const now = useMultiStash ? st.frozenNow : Date.now() / 1000 - st.timeDebt
+    if (hasData) st.frozenNow = dataNow
+    const now = useMultiStash ? st.frozenNow : dataNow
 
     /** Per-series smooth values (freeze when using stash) */
     const smoothValues = new Map<string, number>()
@@ -1801,8 +1816,8 @@ export function createLivelineEngine(
 
     /** Window transition */
     const transition = st.windowTransition
-    if (hasData) st.frozenNow = Date.now() / 1000 - st.timeDebt
-    const now = useStash ? st.frozenNow : Date.now() / 1000 - st.timeDebt
+    if (hasData) st.frozenNow = dataNow
+    const now = useStash ? st.frozenNow : dataNow
     const windowResult = updateWindowTransition(
       cfg, transition, st.displayWindow,
       st.displayMin, st.displayMax,

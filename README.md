@@ -107,6 +107,7 @@ When `loading` flips to `false` with data present, the loading line morphs into 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `window` | `number` | `30` | Visible time window in seconds |
+| `now` | `() => number` | system clock | Custom clock in unix seconds — drives the chart from your own timeline (server time, media playback); must advance smoothly |
 | `windows` | `WindowOption[]` | — | Time horizon buttons `[{ label, secs }]` |
 | `onWindowChange` | `(secs) => void` | — | Called when a window button is clicked |
 | `windowStyle` | `'default' \| 'rounded' \| 'text'` | `'default'` | Window button visual style |

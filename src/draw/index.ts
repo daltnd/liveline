@@ -32,7 +32,7 @@ export function createShakeState(): ShakeState {
 export interface DrawOptions {
   visible: LivelinePoint[]
   smoothValue: number
-  /** engine's Date.now()/1000, single timestamp for the frame */
+  /** engine's data-time "now" — data clock minus time debt, single timestamp for the frame */
   now: number
   momentum: Momentum
   arrowState: ArrowState

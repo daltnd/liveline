@@ -70,6 +70,14 @@ export interface LivelineProps {
 
   /** Time */
   window?: number
+  /**
+   * Custom clock — "now" in unix seconds, same domain as point times.
+   * Read once per frame to drive the scroll, so it must advance smoothly;
+   * use it to run the chart on your own timeline (server time, media
+   * playback). Swapping clocks with different epochs mid-flight is not
+   * supported — remount instead. (default: system clock)
+   */
+  now?: () => number
 
   /** Feature flags */
   grid?: boolean
