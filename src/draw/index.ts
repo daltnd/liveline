@@ -155,7 +155,7 @@ export function drawFrame(
   if (opts.markers?.length && reveal > 0.3) {
     ctx.save()
     ctx.globalAlpha = Math.min(1, (reveal - 0.3) / 0.7)
-    drawMarkers(ctx, layout, palette, opts.markers, opts.visible, opts.activeMarkerId ?? null)
+    drawMarkers(ctx, layout, palette, opts.markers, opts.visible, opts.activeMarkerId ?? null, scrubX, opts.scrubAmount)
     ctx.restore()
   }
 
