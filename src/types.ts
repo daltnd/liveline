@@ -124,6 +124,11 @@ export interface LivelineProps {
   /** Markers */
   markers?: Marker[]
   onMarkerChange?: (id: string | null) => void
+  /**
+   * Markers at or before this time never auto-activate — they still draw,
+   * and the scrub crosshair can still reach them.
+   */
+  markerFloor?: number
 
   /** Optional */
   referenceLine?: ReferenceLine

@@ -31,6 +31,7 @@ export interface EngineConfig {
   onHover?: (point: HoverPoint | null) => void
   markers?: Marker[]
   onMarkerChange?: (id: string | null) => void
+  markerFloor?: number
   showPulse: boolean
   scrub: boolean
   exaggerate: boolean
@@ -768,11 +769,12 @@ export function createLivelineEngine(
   }
   document.addEventListener('visibilitychange', onVisibility)
 
-  /** Active marker — the latest marker `now` has passed (or null).
+  /** Active marker — the latest marker `now` has passed (or null), skipping
+   *  markers at or before `floor` (see markerFloor).
    *  Fires cfg.onMarkerChange when the id changes. */
-  function syncActiveMarker(cfg: EngineConfig, now: number): string | null {
+  function syncActiveMarker(cfg: EngineConfig, now: number, floor: number): string | null {
     let id: string | null = null
-    let best = -Infinity
+    let best = floor
     for (const m of cfg.markers ?? []) {
       if (m.time <= now && m.time > best) {
         best = m.time
@@ -1887,10 +1889,13 @@ export function createLivelineEngine(
     st.lastHover = hoverResult.lastHover
     const { hoverX: drawHoverX, hoverValue: drawHoverValue, hoverTime: drawHoverTime } = hoverResult
 
-    /** Active marker follows the scrub position while hovering */
+    /** Active marker follows the scrub position while hovering; the floor
+     *  only gates the live clock so scrubbing can still inspect old markers */
+    const hovering = hoverResult.isActiveHover && drawHoverTime !== null
     const activeMarkerId = syncActiveMarker(
       cfg,
-      hoverResult.isActiveHover && drawHoverTime !== null ? drawHoverTime : now,
+      hovering ? drawHoverTime! : now,
+      hovering ? -Infinity : cfg.markerFloor ?? -Infinity,
     )
 
     /** Compute swing magnitude for particles (recent velocity / visible range) */
